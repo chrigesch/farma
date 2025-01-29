@@ -28,6 +28,9 @@ def main():
     # Create file uploader object
     uploaded_file = st.file_uploader(label="Carga el Excel", type=["xls", "xlsx"])
     if uploaded_file is None:
+        st.session_state.factor_de_multiplicacion = None
+        st.session_state.proveedor = None
+        st.session_state.tabla_adaptada = None
         st.stop()
 
     if uploaded_file.name[-3:] == "xls":

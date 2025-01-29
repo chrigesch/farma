@@ -71,7 +71,7 @@ def main():
     st.dataframe(data_original)
 
     st.subheader(
-        body=f"Tabla adaptada (factor de multiplicación: {st.session_state.factor_de_multiplicacion})"
+        body=f"Tabla adaptada - {st.session_state.proveedor} - factor de multiplicación: {st.session_state.factor_de_multiplicacion}"  # noqa E501
     )
     st.download_button(
         label="Descargar la tabla adaptada",

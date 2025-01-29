@@ -5,6 +5,16 @@ import streamlit as st
 # Import local modules
 from utils import convertir_precios, to_excel
 
+# Set default values
+if "factor_de_multiplicacion" not in st.session_state:
+    st.session_state.factor_de_multiplicacion = None
+
+if "proveedor" not in st.session_state:
+    st.session_state.proveedor = None
+
+if "tabla_adaptada" not in st.session_state:
+    st.session_state.tabla_adaptada = None
+
 
 def main():
     # Page setup
@@ -36,22 +46,37 @@ def main():
         max_value=2.0,
         value=1.7,
     )
-    data_final_dict = convertir_precios(
-        data=data_original,
-        factor_de_multiplicacion=slider,
-    )
+    button = st.button(label="Haz clic para calcular la tabla adaptada")
+
+    if button:
+        data_final_dict = convertir_precios(
+            data=data_original,
+            factor_de_multiplicacion=slider,
+        )
+        st.session_state.factor_de_multiplicacion = slider
+        st.session_state.proveedor = data_final_dict["proveedor"]
+        st.session_state.tabla_adaptada = data_final_dict["tabla"]
+
+    if (
+        (st.session_state.factor_de_multiplicacion is None)
+        | (st.session_state.proveedor is None)
+        | (st.session_state.tabla_adaptada is None)
+    ):
+        st.stop()
 
     st.subheader(body="Tabla original")
     st.dataframe(data_original)
 
-    st.subheader(body="Tabla adaptada")
+    st.subheader(
+        body=f"Tabla adaptada (factor de multiplicación: {st.session_state.factor_de_multiplicacion})"
+    )
     st.download_button(
         label="Descargar la tabla adaptada",
-        data=to_excel(data_final_dict["tabla"].set_index("codigo")),
-        file_name=f"tabla_adaptada_{data_final_dict['proveedor']}.xlsx",
+        data=to_excel(st.session_state.tabla_adaptada.set_index("codigo")),
+        file_name=f"tabla_adaptada_{st.session_state.proveedor}.xlsx",
     )
     st.table(
-        data_final_dict["tabla"].style.format(
+        st.session_state.tabla_adaptada.style.format(
             {
                 "codigo": "{:.0f}",  # Show no formatting
                 "barra": "{:.0f}",  # Show no formatting

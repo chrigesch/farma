@@ -49,16 +49,11 @@ def convertir_precios(
     resultado = {"proveedor": str, "tabla": pd.DataFrame}
 
     if df.columns.to_list() == COLS_PROVEEDORES["dispita"]:
-
-        idx_primer_producto = df.index[df.iloc[:, 1] == "PROMOCIONES"][0] + 1
-
-        df = df.iloc[idx_primer_producto:, [0, 6, 1, 3]]
-        df.iloc[:, -1] = pd.to_numeric(df.iloc[:, -1], errors="coerce")
-        df = df.dropna()
+        df = adaptar_tabla_dispita(data=df)
         resultado["proveedor"] = "dispita"
 
     elif df.columns.to_list() == COLS_PROVEEDORES["suizo"]:
-        df = df.iloc[:, :4]
+        df = adaptar_tabla_suizo(data=df)
         resultado["proveedor"] = "suizo"
 
     else:
@@ -69,6 +64,19 @@ def convertir_precios(
     resultado["tabla"] = df
 
     return resultado
+
+
+def adaptar_tabla_dispita(data: pd.DataFrame) -> pd.DataFrame:
+    idx_primer_producto = data.index[data.iloc[:, 1] == "PROMOCIONES"][0] + 1
+
+    data = data.iloc[idx_primer_producto:, [0, 6, 1, 3]]
+    data.iloc[:, -1] = pd.to_numeric(data.iloc[:, -1], errors="coerce")
+    data = data.dropna()
+    return data
+
+
+def adaptar_tabla_suizo(data: pd.DataFrame) -> pd.DataFrame:
+    return data.iloc[:, :4]
 
 
 def to_excel(df: pd.DataFrame):

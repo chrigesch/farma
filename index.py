@@ -33,7 +33,7 @@ def main():
     iniciar_session_state()
     # Create file uploader object
     uploaded_file = st.file_uploader(
-        label="Carga el Excel",
+        label="**Carga el Excel**",
         type=["xls", "xlsx"],
         on_change=reiniciar_session_state(),
     )
@@ -52,7 +52,7 @@ def main():
         data_original = pd.read_excel(io=uploaded_file)
 
     slider = st.slider(
-        label="Selecciona el factor de multiplicación",
+        label="**Selecciona el factor de multiplicación**",
         min_value=1.0,
         max_value=2.0,
         value=1.7,

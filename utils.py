@@ -45,14 +45,15 @@ def convertir_precios(
 ) -> dict:
 
     df = data.copy(deep=True)
+    cols_df = df.columns.to_list()
 
     resultado = {"proveedor": str, "tabla": pd.DataFrame}
 
-    if df.columns.to_list() == COLS_PROVEEDORES["dispita"]:
+    if cols_df == COLS_PROVEEDORES["dispita"]:
         df = adaptar_tabla_dispita(data=df)
         resultado["proveedor"] = "dispita"
 
-    elif df.columns.to_list() == COLS_PROVEEDORES["suizo"]:
+    elif cols_df == COLS_PROVEEDORES["suizo"]:
         df = adaptar_tabla_suizo(data=df)
         resultado["proveedor"] = "suizo"
 

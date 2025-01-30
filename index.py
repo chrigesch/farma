@@ -5,14 +5,20 @@ import streamlit as st
 # Import local modules
 from utils import convertir_precios, to_excel
 
-# Set default values
-if "factor_de_multiplicacion" not in st.session_state:
+
+def iniciar_session_state():
+    # Set default values
+    if "factor_de_multiplicacion" not in st.session_state:
+        st.session_state.factor_de_multiplicacion = None
+    if "proveedor" not in st.session_state:
+        st.session_state.proveedor = None
+    if "tabla_adaptada" not in st.session_state:
+        st.session_state.tabla_adaptada = None
+
+
+def reiniciar_session_state():
     st.session_state.factor_de_multiplicacion = None
-
-if "proveedor" not in st.session_state:
     st.session_state.proveedor = None
-
-if "tabla_adaptada" not in st.session_state:
     st.session_state.tabla_adaptada = None
 
 
@@ -24,13 +30,15 @@ def main():
     )
 
     st.title(body="Farma")
-
+    iniciar_session_state()
     # Create file uploader object
-    uploaded_file = st.file_uploader(label="Carga el Excel", type=["xls", "xlsx"])
+    uploaded_file = st.file_uploader(
+        label="Carga el Excel",
+        type=["xls", "xlsx"],
+        on_change=reiniciar_session_state(),
+    )
     if uploaded_file is None:
-        st.session_state.factor_de_multiplicacion = None
-        st.session_state.proveedor = None
-        st.session_state.tabla_adaptada = None
+        reiniciar_session_state()
         st.stop()
 
     if uploaded_file.name[-3:] == "xls":

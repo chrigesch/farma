@@ -49,11 +49,12 @@ def convertir_precios(
 
     resultado = {"proveedor": str, "tabla": pd.DataFrame}
 
-    if cols_df == COLS_PROVEEDORES["dispita"]:
+    # Only check the first 3 columns to verify the conditions
+    if cols_df[:2] == COLS_PROVEEDORES["dispita"][:2]:
         df = adaptar_tabla_dispita(data=df)
         resultado["proveedor"] = "dispita"
 
-    elif cols_df == COLS_PROVEEDORES["suizo"]:
+    elif cols_df[:2] == COLS_PROVEEDORES["suizo"][:2]:
         df = adaptar_tabla_suizo(data=df)
         resultado["proveedor"] = "suizo"
 
@@ -68,7 +69,8 @@ def convertir_precios(
 
 
 def adaptar_tabla_dispita(data: pd.DataFrame) -> pd.DataFrame:
-    idx_primer_producto = data.index[data.iloc[:, 1] == "PROMOCIONES"][0] + 1
+
+    idx_primer_producto = data.index[data.iloc[:, 3] == "MAYOR"][0] + 1
 
     data = data.iloc[idx_primer_producto:, [0, 6, 1, 3]]
     data.iloc[:, -1] = pd.to_numeric(data.iloc[:, -1], errors="coerce")

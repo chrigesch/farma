@@ -4,6 +4,13 @@ import pandas as pd
 
 
 COLS_PROVEEDORES = {
+    "babelito": [
+        "CODIGO",
+        "DESCRIPCION",
+        "COD.DE BARRAS",
+        "COMERCIO S/IVA",
+        "PUBLICO",
+    ],
     "dispita": [
         "Unnamed: 0",
         "LINEA DISPITA",
@@ -49,8 +56,12 @@ def convertir_precios(
 
     resultado = {"proveedor": str, "tabla": pd.DataFrame}
 
+    # Only check the first 5 columns to verify the conditions
+    if df.iloc[6, :].to_list()[:5] == COLS_PROVEEDORES["babelito"]:
+        df = adaptar_tabla_babelito(data=df)
+        resultado["proveedor"] = "babelito"
     # Only check the first 3 columns to verify the conditions
-    if cols_df[:2] == COLS_PROVEEDORES["dispita"][:2]:
+    elif cols_df[:2] == COLS_PROVEEDORES["dispita"][:2]:
         df = adaptar_tabla_dispita(data=df)
         resultado["proveedor"] = "dispita"
 
@@ -66,6 +77,23 @@ def convertir_precios(
     resultado["tabla"] = df
 
     return resultado
+
+
+def adaptar_tabla_babelito(data: pd.DataFrame) -> pd.DataFrame:
+
+    idx_colnames = data.index[data.iloc[:, 0] == "CODIGO"][0]
+
+    df_1 = pd.DataFrame(data.iloc[idx_colnames + 1 :, :5])  # noqa E203
+    df_2 = pd.DataFrame(data.iloc[1:, 6:])
+    df_final = pd.concat(
+        [pd.DataFrame(dfi.values) for dfi in [df_1, df_2]],
+        ignore_index=True,
+    )
+    df_final.columns = COLS_PROVEEDORES["babelito"]
+    df_final = df_final[["CODIGO", "COD.DE BARRAS", "DESCRIPCION", "COMERCIO S/IVA"]]
+    for col in ["CODIGO", "COD.DE BARRAS", "COMERCIO S/IVA"]:
+        df_final[col] = pd.to_numeric(df_final[col], errors="coerce")
+    return df_final
 
 
 def adaptar_tabla_dispita(data: pd.DataFrame) -> pd.DataFrame:
